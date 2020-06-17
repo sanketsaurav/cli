@@ -43,6 +43,12 @@ type API struct {
 	UpdateHealthCheckFn func(*fastly.UpdateHealthCheckInput) (*fastly.HealthCheck, error)
 	DeleteHealthCheckFn func(*fastly.DeleteHealthCheckInput) error
 
+	CreateDictionaryFn func(*fastly.CreateDictionaryInput) (*fastly.Dictionary, error)
+	ListDictionariesFn func(*fastly.ListDictionariesInput) ([]*fastly.Dictionary, error)
+	GetDictionaryFn    func(*fastly.GetDictionaryInput) (*fastly.Dictionary, error)
+	UpdateDictionaryFn func(*fastly.UpdateDictionaryInput) (*fastly.Dictionary, error)
+	DeleteDictionaryFn func(*fastly.DeleteDictionaryInput) error
+
 	CreateBigQueryFn func(*fastly.CreateBigQueryInput) (*fastly.BigQuery, error)
 	ListBigQueriesFn func(*fastly.ListBigQueriesInput) ([]*fastly.BigQuery, error)
 	GetBigQueryFn    func(*fastly.GetBigQueryInput) (*fastly.BigQuery, error)
@@ -330,6 +336,31 @@ func (m API) UpdateHealthCheck(i *fastly.UpdateHealthCheckInput) (*fastly.Health
 // DeleteHealthCheck implements Interface.
 func (m API) DeleteHealthCheck(i *fastly.DeleteHealthCheckInput) error {
 	return m.DeleteHealthCheckFn(i)
+}
+
+// CreateDictionary implements Interface.
+func (m API) CreateDictionary(i *fastly.CreateDictionaryInput) (*fastly.Dictionary, error) {
+	return m.CreateDictionaryFn(i)
+}
+
+// ListDictionarys implements Interface.
+func (m API) ListDictionaries(i *fastly.ListDictionariesInput) ([]*fastly.Dictionary, error) {
+	return m.ListDictionariesFn(i)
+}
+
+// GetDictionary implements Interface.
+func (m API) GetDictionary(i *fastly.GetDictionaryInput) (*fastly.Dictionary, error) {
+	return m.GetDictionaryFn(i)
+}
+
+// UpdateDictionary implements Interface.
+func (m API) UpdateDictionary(i *fastly.UpdateDictionaryInput) (*fastly.Dictionary, error) {
+	return m.UpdateDictionaryFn(i)
+}
+
+// DeleteDictionary implements Interface.
+func (m API) DeleteDictionary(i *fastly.DeleteDictionaryInput) error {
+	return m.DeleteDictionaryFn(i)
 }
 
 // CreateBigQuery implements Interface.

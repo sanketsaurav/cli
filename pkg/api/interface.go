@@ -52,6 +52,12 @@ type Interface interface {
 	UpdateHealthCheck(*fastly.UpdateHealthCheckInput) (*fastly.HealthCheck, error)
 	DeleteHealthCheck(*fastly.DeleteHealthCheckInput) error
 
+	CreateDictionary(*fastly.CreateDictionaryInput) (*fastly.Dictionary, error)
+	ListDictionaries(*fastly.ListDictionariesInput) ([]*fastly.Dictionary, error)
+	GetDictionary(*fastly.GetDictionaryInput) (*fastly.Dictionary, error)
+	UpdateDictionary(*fastly.UpdateDictionaryInput) (*fastly.Dictionary, error)
+	DeleteDictionary(*fastly.DeleteDictionaryInput) error
+
 	CreateBigQuery(*fastly.CreateBigQueryInput) (*fastly.BigQuery, error)
 	ListBigQueries(*fastly.ListBigQueriesInput) ([]*fastly.BigQuery, error)
 	GetBigQuery(*fastly.GetBigQueryInput) (*fastly.BigQuery, error)

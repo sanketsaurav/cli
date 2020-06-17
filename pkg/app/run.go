@@ -16,6 +16,7 @@ import (
 	"github.com/fastly/cli/pkg/compute"
 	"github.com/fastly/cli/pkg/config"
 	"github.com/fastly/cli/pkg/configure"
+	"github.com/fastly/cli/pkg/dictionary"
 	"github.com/fastly/cli/pkg/domain"
 	"github.com/fastly/cli/pkg/errors"
 	"github.com/fastly/cli/pkg/healthcheck"
@@ -153,6 +154,13 @@ func Run(args []string, env config.Environment, file config.File, configFilePath
 	healthcheckDescribe := healthcheck.NewDescribeCommand(healthcheckRoot.CmdClause, &globals)
 	healthcheckUpdate := healthcheck.NewUpdateCommand(healthcheckRoot.CmdClause, &globals)
 	healthcheckDelete := healthcheck.NewDeleteCommand(healthcheckRoot.CmdClause, &globals)
+
+	dictionaryRoot := dictionary.NewRootCommand(app, &globals)
+	dictionaryCreate := dictionary.NewCreateCommand(dictionaryRoot.CmdClause, &globals)
+	dictionaryList := dictionary.NewListCommand(dictionaryRoot.CmdClause, &globals)
+	dictionaryDescribe := dictionary.NewDescribeCommand(dictionaryRoot.CmdClause, &globals)
+	dictionaryUpdate := dictionary.NewUpdateCommand(dictionaryRoot.CmdClause, &globals)
+	dictionaryDelete := dictionary.NewDeleteCommand(dictionaryRoot.CmdClause, &globals)
 
 	loggingRoot := logging.NewRootCommand(app, &globals)
 
@@ -370,6 +378,13 @@ func Run(args []string, env config.Environment, file config.File, configFilePath
 		healthcheckDescribe,
 		healthcheckUpdate,
 		healthcheckDelete,
+
+		dictionaryRoot,
+		dictionaryCreate,
+		dictionaryList,
+		dictionaryDescribe,
+		dictionaryUpdate,
+		dictionaryDelete,
 
 		loggingRoot,
 
