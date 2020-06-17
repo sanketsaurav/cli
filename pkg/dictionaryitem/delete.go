@@ -1,4 +1,4 @@
-package dictionary
+package dictionaryitem
 
 import (
 	"io"
@@ -17,8 +17,8 @@ type DeleteCommand struct {
 	manifest manifest.Data
 
 	// required
-	DictionaryName string // Can't shaddow common.Base method Name().
-	Version        int
+	DictionaryID string
+	Key          string
 }
 
 // NewDeleteCommand returns a usable command registered under the parent.
@@ -28,28 +28,28 @@ func NewDeleteCommand(parent common.Registerer, globals *config.Data) *DeleteCom
 
 	c.manifest.File.Read(manifest.Filename)
 
-	c.CmdClause = parent.Command("delete", "Delete a dictionary on a Fastly service version").Alias("remove")
+	c.CmdClause = parent.Command("delete", "Delete an item from an dictionary").Alias("remove")
 
-	c.CmdClause.Flag("name", "Dictionary name").Short('n').Required().StringVar(&c.DictionaryName)
 	c.CmdClause.Flag("service-id", "Service ID").Short('s').StringVar(&c.manifest.Flag.ServiceID)
-	c.CmdClause.Flag("version", "Number of service version").Required().IntVar(&c.Version)
+	c.CmdClause.Flag("dictionary-id", "The ID of the dictionary containing this item").Required().StringVar(&c.DictionaryID)
+	c.CmdClause.Flag("key", "Item key").Required().StringVar(&c.Key)
 
 	return &c
 }
 
 // createInput transforms values parsed from CLI flags into an object to be used
 // by the API client library.
-func (c *DeleteCommand) createInput() (*fastly.DeleteDictionaryInput, error) {
-	var input fastly.DeleteDictionaryInput
-
+func (c *DeleteCommand) createInput() (*fastly.DeleteDictionaryItemInput, error) {
 	serviceID, source := c.manifest.ServiceID()
 	if source == manifest.SourceUndefined {
 		return nil, errors.ErrNoServiceID
 	}
 
-	input.Service = serviceID
-	input.Version = c.Version
-	input.Name = c.DictionaryName
+	input := fastly.DeleteDictionaryItemInput{
+		Service:    serviceID,
+		Dictionary: c.DictionaryID,
+		ItemKey:    c.Key,
+	}
 
 	return &input, nil
 }
@@ -61,10 +61,10 @@ func (c *DeleteCommand) Exec(in io.Reader, out io.Writer) error {
 		return err
 	}
 
-	if err := c.Globals.Client.DeleteDictionary(input); err != nil {
+	if err := c.Globals.Client.DeleteDictionaryItem(input); err != nil {
 		return err
 	}
 
-	text.Success(out, "Deleted dictionary %s (service %s version %d)", input.Name, input.Service, input.Version)
+	text.Success(out, "Deleted dictionary item %s (service %s dictionary %s)", input.ItemKey, input.Service, input.Dictionary)
 	return nil
 }

@@ -58,6 +58,13 @@ type Interface interface {
 	UpdateDictionary(*fastly.UpdateDictionaryInput) (*fastly.Dictionary, error)
 	DeleteDictionary(*fastly.DeleteDictionaryInput) error
 
+	CreateDictionaryItem(*fastly.CreateDictionaryItemInput) (*fastly.DictionaryItem, error)
+	ListDictionaryItems(*fastly.ListDictionaryItemsInput) ([]*fastly.DictionaryItem, error)
+	GetDictionaryItem(*fastly.GetDictionaryItemInput) (*fastly.DictionaryItem, error)
+	UpdateDictionaryItem(*fastly.UpdateDictionaryItemInput) (*fastly.DictionaryItem, error)
+	BatchModifyDictionaryItems(*fastly.BatchModifyDictionaryItemsInput) error
+	DeleteDictionaryItem(*fastly.DeleteDictionaryItemInput) error
+
 	CreateBigQuery(*fastly.CreateBigQueryInput) (*fastly.BigQuery, error)
 	ListBigQueries(*fastly.ListBigQueriesInput) ([]*fastly.BigQuery, error)
 	GetBigQuery(*fastly.GetBigQueryInput) (*fastly.BigQuery, error)

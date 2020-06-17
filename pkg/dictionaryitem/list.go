@@ -1,4 +1,4 @@
-package dictionary
+package dictionaryitem
 
 import (
 	"fmt"
@@ -12,13 +12,13 @@ import (
 	"github.com/fastly/go-fastly/fastly"
 )
 
-// ListCommand calls the Fastly API to list dictionaries.
+// ListCommand calls the Fastly API to list dictionary items.
 type ListCommand struct {
 	common.Base
 	manifest manifest.Data
 
 	// required
-	Version int
+	DictionaryID string
 }
 
 // NewListCommand returns a usable command registered under the parent.
@@ -27,26 +27,26 @@ func NewListCommand(parent common.Registerer, globals *config.Data) *ListCommand
 	c.Globals = globals
 	c.manifest.File.Read(manifest.Filename)
 
-	c.CmdClause = parent.Command("list", "List dictionaries on a Fastly service version")
+	c.CmdClause = parent.Command("list", "List items in an dictionary")
 
 	c.CmdClause.Flag("service-id", "Service ID").Short('s').StringVar(&c.manifest.Flag.ServiceID)
-	c.CmdClause.Flag("version", "Number of service version").Required().IntVar(&c.Version)
+	c.CmdClause.Flag("dictionary-id", "The ID of the dictionary").Required().StringVar(&c.DictionaryID)
 
 	return &c
 }
 
 // createInput transforms values parsed from CLI flags into an object to be used
 // by the API client library.
-func (c *ListCommand) createInput() (*fastly.ListDictionariesInput, error) {
-	var input fastly.ListDictionariesInput
-
+func (c *ListCommand) createInput() (*fastly.ListDictionaryItemsInput, error) {
 	serviceID, source := c.manifest.ServiceID()
 	if source == manifest.SourceUndefined {
 		return nil, errors.ErrNoServiceID
 	}
 
-	input.Service = serviceID
-	input.Version = c.Version
+	input := fastly.ListDictionaryItemsInput{
+		Service:    serviceID,
+		Dictionary: c.DictionaryID,
+	}
 
 	return &input, nil
 }
@@ -58,37 +58,36 @@ func (c *ListCommand) Exec(in io.Reader, out io.Writer) error {
 		return err
 	}
 
-	dictionaries, err := c.Globals.Client.ListDictionaries(input)
+	items, err := c.Globals.Client.ListDictionaryItems(input)
 	if err != nil {
 		return err
 	}
 
 	if !c.Globals.Verbose() {
 		tw := text.NewTable(out)
-		tw.AddHeader("SERVICE", "VERSION", "ID", "NAME", "WRITE ONLY")
-		for _, d := range dictionaries {
-			tw.AddLine(d.ServiceID, d.Version, d.ID, d.Name, d.WriteOnly)
+		tw.AddHeader("SERVICE", "DICTIONARY ID", "KEY", "VALUE")
+		for _, i := range items {
+			tw.AddLine(i.ServiceID, i.DictionaryID, i.ItemKey, i.ItemValue)
 		}
 		tw.Print()
 		return nil
 	}
 
 	fmt.Fprintf(out, "Service ID: %s\n", input.Service)
-	fmt.Fprintf(out, "Version: %d\n", input.Version)
-	for i, d := range dictionaries {
-		fmt.Fprintf(out, "\tDictionary %d/%d\n", i+1, len(dictionaries))
-		fmt.Fprintf(out, "\t\tID: %s\n", d.ID)
-		fmt.Fprintf(out, "\t\tName: %s\n", d.Name)
-		fmt.Fprintf(out, "\t\tWrite only: %v\n", d.WriteOnly)
+	fmt.Fprintf(out, "Dictionary ID: %s\n", input.Dictionary)
+	for i, item := range items {
+		fmt.Fprintf(out, "\tItem %d/%d\n", i+1, len(items))
+		fmt.Fprintf(out, "\t\tKey: %s\n", item.ItemKey)
+		fmt.Fprintf(out, "\t\tValue: %s\n", item.ItemValue)
 
-		if d.CreatedAt != nil {
-			fmt.Fprintf(out, "\t\tCreated (UTC): %s\n", d.CreatedAt.UTC().Format(common.TimeFormat))
+		if item.CreatedAt != nil {
+			fmt.Fprintf(out, "\t\tCreated (UTC): %s\n", item.CreatedAt.UTC().Format(common.TimeFormat))
 		}
-		if d.UpdatedAt != nil {
-			fmt.Fprintf(out, "\t\tLast edited (UTC): %s\n", d.UpdatedAt.UTC().Format(common.TimeFormat))
+		if item.UpdatedAt != nil {
+			fmt.Fprintf(out, "\t\tLast edited (UTC): %s\n", item.UpdatedAt.UTC().Format(common.TimeFormat))
 		}
-		if d.DeletedAt != nil {
-			fmt.Fprintf(out, "\t\tDeleted (UTC): %s\n", d.DeletedAt.UTC().Format(common.TimeFormat))
+		if item.DeletedAt != nil {
+			fmt.Fprintf(out, "\t\tDeleted (UTC): %s\n", item.DeletedAt.UTC().Format(common.TimeFormat))
 		}
 	}
 	fmt.Fprintln(out)

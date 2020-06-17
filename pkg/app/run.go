@@ -17,6 +17,7 @@ import (
 	"github.com/fastly/cli/pkg/config"
 	"github.com/fastly/cli/pkg/configure"
 	"github.com/fastly/cli/pkg/dictionary"
+	"github.com/fastly/cli/pkg/dictionaryitem"
 	"github.com/fastly/cli/pkg/domain"
 	"github.com/fastly/cli/pkg/errors"
 	"github.com/fastly/cli/pkg/healthcheck"
@@ -161,6 +162,13 @@ func Run(args []string, env config.Environment, file config.File, configFilePath
 	dictionaryDescribe := dictionary.NewDescribeCommand(dictionaryRoot.CmdClause, &globals)
 	dictionaryUpdate := dictionary.NewUpdateCommand(dictionaryRoot.CmdClause, &globals)
 	dictionaryDelete := dictionary.NewDeleteCommand(dictionaryRoot.CmdClause, &globals)
+
+	dictionaryitemRoot := dictionaryitem.NewRootCommand(app, &globals)
+	dictionaryitemCreate := dictionaryitem.NewCreateCommand(dictionaryitemRoot.CmdClause, &globals)
+	dictionaryitemList := dictionaryitem.NewListCommand(dictionaryitemRoot.CmdClause, &globals)
+	dictionaryitemDescribe := dictionaryitem.NewDescribeCommand(dictionaryitemRoot.CmdClause, &globals)
+	dictionaryitemUpdate := dictionaryitem.NewUpdateCommand(dictionaryitemRoot.CmdClause, &globals)
+	dictionaryitemDelete := dictionaryitem.NewDeleteCommand(dictionaryitemRoot.CmdClause, &globals)
 
 	loggingRoot := logging.NewRootCommand(app, &globals)
 
@@ -385,6 +393,13 @@ func Run(args []string, env config.Environment, file config.File, configFilePath
 		dictionaryDescribe,
 		dictionaryUpdate,
 		dictionaryDelete,
+
+		dictionaryitemRoot,
+		dictionaryitemCreate,
+		dictionaryitemList,
+		dictionaryitemDescribe,
+		dictionaryitemUpdate,
+		dictionaryitemDelete,
 
 		loggingRoot,
 
